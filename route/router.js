@@ -21,7 +21,7 @@ const upload = multer({ storage: storage })
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: false }));
 
-// create an msisdn data
+// Uploading an msisdn file
 
 router.post('/msisdn', upload.single('test'), (req, res) => {
     const filePath = './uploads/test.csv';
@@ -30,64 +30,44 @@ router.post('/msisdn', upload.single('test'), (req, res) => {
         if (err) {
             return console.log("Unable to read file " + err);
         }   
-        // console.log(data);
-
+       let ourArrayBody = [];
        const dataLine = data.split('\n');
-
-       for(i in dataLine){
-        const msisdn = dataLine[i].split(',')[0];
-        const mno = dataLine[i].split(',')[1];
-        console.log(msisdn)
-       }
-       dataLine.map(element => {
-
-            //     msisdnModel.create({
-            //     msisdn:msisdn,
-            //     mno: mno
-            // }).then((resp) => {
-            //     console.log('Data was created', resp);
-            //     return res.send({
-            //         error: false,
-            //         status: 200,
-            //         message: 'Data was created successfully'
-            //     })
-            // }).catch((err) => {
-            //     console.log('Data was not created', err);
-            //     return res.send({
-            //         error: true,
-            //         status: 400,
-            //         message: 'Unable to create Data'
-            //     });
-            // });//end catch
+       dataLine.forEach(element => {
+           const msisdn = element.split(',')[0];
+           const mno = element.split(',')[1];
+           const newModel = new msisdnModel({
+               msisdn,
+               mno
+           });
+           newModel.save()
+           .then( data => {
+               ourArrayBody.push(data);
+               console.log(data);
+               })
+           .catch( err => {
+               console.log(err)
+           });      
        });
     });
-    // const msisdn = msisdn.data
-    // const mno = mno.data
-
-    // msisdnModel.create({
-    //     msisdn,
-    //     mno
-    // }).then((resp) => {
-    //     console.log('Data was created', resp);
-    //     return res.send({
-    //         error: false,
-    //         status: 200,
-    //         message: 'Data was created successfully'
-    //     })
-    // }).catch((err) => {
-    //     console.log('Data was not created', err);
-    //     return res.send({
-    //         error: true,
-    //         status: 400,
-    //         message: 'Unable to create Data'
-    //     });
-    // });//end catch
+    return res.send({
+        error: false,
+        status: 200,
+        message: 'Saved successfully'
+    })
+          
 });
 
 
-// router.post('/msisdn', (req, res) => {
-//     const msisdn = req.body.msisdn
-//     const mno = req.body.mno
+// router.post('/msisdn', upload.single('test'), (req, res) => {
+//     const filePath = './uploads/test.csv';
+
+//     fs.readFile(filePath, 'utf-8', function (err, data) {
+//         if (err) {
+//             return console.log("Unable to read file " + err);
+//         }   
+//         console.log(data);
+//     const msisdn = req.body.msisdn;
+//     const mno = req.body.mno;
 //     console.log('msisdn', msisdn);
 //     console.log('mno', mno)
 //     msisdnModel.create({
@@ -110,7 +90,35 @@ router.post('/msisdn', upload.single('test'), (req, res) => {
 //     });
 // });
 
-// Delete an msisdn data
+
+// Posting individual msisdn
+
+router.post('/indmsisdn', (req, res) => {
+    const msisdn = req.body.msisdn
+    const mno = req.body.mno
+    console.log('msisdn', msisdn);
+    console.log('mno', mno)
+    msisdnModel.create({
+        msisdn,
+        mno
+    }).then((resp) => {
+        console.log('Data was created', resp);
+        return res.send({
+            error: false,
+            status: 200,
+            message: 'Data was created successfully'
+        })
+    }).catch((err) => {
+        console.log('Data was not created', err);
+        return res.send({
+            error: true,
+            status: 400,
+            message: 'Unable to create Data'
+        });
+    });
+});
+
+// Deleting an msisdn data
 
 router.delete('/msisdn/:msisdn', (req, res) => {
     const msisdn = req.params.msisdn
@@ -137,7 +145,7 @@ router.delete('/msisdn/:msisdn', (req, res) => {
     });
 });
 
-// Fetch an msisdn Data
+// Fetching an msisdn data
 
 router.get('/msisdn', (req, res) => {
     const msisdn = req.body.msisdn
@@ -166,11 +174,34 @@ router.get('/msisdn', (req, res) => {
 
 
 
-// Update an msisdn data
+// Updating an msisdn data
 
-router.put('/msisdn/:id', (req, res) => {
-    
-})
+router.put('/msisdn/:msisdn', (req, res) => {
+    const msisdn = req.params.msisdn;
+    let query = { 'msisdn': msisdn }
+    const msisdnToUpdateBy = req.body.msisdn;
+    let update = {
+        $set: {
+            msisdn: msisdnToUpdateBy
+        }
+    }
+    let options = { upsert: true }
+    msisdnModel.findOneAndUpdate (query, update, options, (err, data) => {
+        console.log('Error occured while updating', err);
+        console.log('Data returned from Updating', data)
+        if (err) {
+            return res.send({
+                code: 400,
+                error: true,
+                message: 'Unable to update msisdn'
+            })
+        }
+            return res.send({
+                code: 202,
+                error: false,
+                message: 'msisdn updated successfully'
+            })
+    })
+});
 
-
-module.exports = router
+module.exports = router;

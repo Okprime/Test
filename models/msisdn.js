@@ -3,16 +3,13 @@ const Schema = mongoose.Schema
 
 const msisdnSchema = new Schema ({
     msisdn: {
-        type: String,
-        required: true,
+        type: String
     },
     mno: {
-        type: String,
-        required: true
+        type: String
     },
 });
 
 const msisdnModel = mongoose.model('msisdn', msisdnSchema);
 
 module.exports = msisdnModel;
-//module.exports = mnoSchema;
