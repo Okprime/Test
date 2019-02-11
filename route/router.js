@@ -58,39 +58,6 @@ router.post('/msisdn', upload.single('test'), (req, res) => {
 });
 
 
-// router.post('/msisdn', upload.single('test'), (req, res) => {
-//     const filePath = './uploads/test.csv';
-
-//     fs.readFile(filePath, 'utf-8', function (err, data) {
-//         if (err) {
-//             return console.log("Unable to read file " + err);
-//         }   
-//         console.log(data);
-//     const msisdn = req.body.msisdn;
-//     const mno = req.body.mno;
-//     console.log('msisdn', msisdn);
-//     console.log('mno', mno)
-//     msisdnModel.create({
-//         msisdn,
-//         mno
-//     }).then((resp) => {
-//         console.log('Data was created', resp);
-//         return res.send({
-//             error: false,
-//             status: 200,
-//             message: 'Data was created successfully'
-//         })
-//     }).catch((err) => {
-//         console.log('Data was not created', err);
-//         return res.send({
-//             error: true,
-//             status: 400,
-//             message: 'Unable to create Data'
-//         });
-//     });
-// });
-
-
 // Posting individual msisdn
 
 router.post('/indmsisdn', (req, res) => {
