@@ -1,11 +1,11 @@
+require('dotenv').config();
+
 const express = require('express');
 const app = express();
 const router = require('./route/router')
 const {msisdn} = require('./models/msisdn')
 
-let port = 4500;
-
-
+const port = process.env.PORT;
 app.use(router);
 
 
